@@ -46,26 +46,39 @@ const AuthForm = ({ type }: { type: FormType }) => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
-    setErrorMessage("");
+const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  setIsLoading(true);
+  setErrorMessage("");
 
-    try {
-      const user =
-        type === "sign-up"
-          ? await createAccount({
-              fullName: values.fullName || "",
-              email: values.email,
-            })
-          : await signInUser({ email: values.email });
+  try {
+    const user =
+      type === "sign-up"
+        ? await createAccount({
+            fullName: values.fullName || "",
+            email: values.email,
+          })
+        : await signInUser({ email: values.email });
 
-      setAccountId(user.accountId);
-    } catch {
-      setErrorMessage("Failed to create account. Please try again.");
-    } finally {
-      setIsLoading(false);
+    // NEW: handle "user not found" response from signInUser
+    // signInUser returns parseStringify({ accountId: null, error: "User not found" })
+    if (user && (user as any).accountId === null) {
+      // show friendly message and stop
+      setErrorMessage("User not registered — please Sign Up first.");
+      setAccountId(null);
+      return;
     }
-  };
+
+    // existing behavior: set accountId to open OTP modal
+    setAccountId((user as any).accountId);
+  } catch (err) {
+    // more detailed message for debugging
+    console.error("Auth onSubmit error:", err);
+    setErrorMessage("Failed to sign in / create account. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <>

@@ -40,6 +40,7 @@ const OtpModal = ({
   // The OTP (Appwrite calls it “secret”)
   const [secret, setSecret] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [otpError, setOtpError] = useState("");
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -53,6 +54,7 @@ const OtpModal = ({
       if (sessionId) router.push("/");
     } catch (error) {
       console.log("Failed to verify OTP", error);
+      setOtpError("Incorrect OTP. Please try again.");
     }
 
     setIsLoading(false);
@@ -83,7 +85,14 @@ const OtpModal = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <InputOTP maxLength={6} value={secret} onChange={setSecret}>
+        <InputOTP
+          maxLength={6}
+          value={secret}
+          onChange={(value) => {
+            setSecret(value);
+            if (otpError) setOtpError("");
+          }}
+        >
           <InputOTPGroup className="shad-otp">
             <InputOTPSlot index={0} className="shad-otp-slot" />
             <InputOTPSlot index={1} className="shad-otp-slot" />
@@ -93,6 +102,10 @@ const OtpModal = ({
             <InputOTPSlot index={5} className="shad-otp-slot" />
           </InputOTPGroup>
         </InputOTP>
+
+        {otpError && (
+            <p className="text-red-500 text-center mt-3">{otpError}</p>
+        )}
 
         <AlertDialogFooter>
           <div className="flex w-full flex-col gap-4">
