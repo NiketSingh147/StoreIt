@@ -14,9 +14,7 @@
 
 <h3 align="center">Storage and File Sharing Platform</h3>
 
-   <div align="center">
-     Build this project step by step with our detailed tutorial on <a href="https://www.youtube.com/@javascriptmastery/videos" target="_blank"><b>JavaScript Mastery</b></a> YouTube. Join the JSM family!
-    </div>
+
 </div>
 
 ## 📋 <a name="table">Table of Contents</a>
@@ -26,27 +24,16 @@
 3. 🔋 [Features](#features)
 4. 🤸 [Quick Start](#quick-start)
 5. 🕸️ [Snippets (Code to Copy)](#snippets)
-6. 🔗 [Assets](#links)
-7. 🚀 [More](#more)
 
-## 🚨 Tutorial
 
-This repository contains the code corresponding to an in-depth tutorial available on our YouTube
-channel, <a href="https://www.youtube.com/@javascriptmastery/videos" target="_blank"><b>JavaScript Mastery</b></a>.
 
-If you prefer visual learning, this is the perfect resource for you. Follow our tutorial to learn how to build projects
-like these step-by-step in a beginner-friendly manner!
-
-<a href="https://youtu.be/lie0cr3wESQ?si=yLQyhMrYLjpysnqE" target="_blank"><img src="https://github.com/sujatagunale/EasyRead/assets/151519281/1736fca5-a031-4854-8c09-bc110e3bc16d" /></a>
 
 ## <a name="introduction">🤖 Introduction</a>
 
 A storage management and file sharing platform that lets users effortlessly upload, organize, and share files. Built with the latest Next.js 15 and the Appwrite Node SDK, utilizing advanced features for seamless file management.
 
-If you're getting started and need assistance or face any bugs, join our active Discord community with over **34k+**
-members. It's a place where people help each other out.
+Designed with user experience in mind, StoreIt includes OTP-based authentication, file previews, metadata tracking, powerful sorting and search tools, and a dashboard that visualizes your overall storage usage. It’s built to be scalable, secure, and easy for both personal and professional cloud-file management.
 
-<a href="https://discord.com/invite/n6EdbFJ" target="_blank"><img src="https://github.com/sujatagunale/EasyRead/assets/151519281/618f4872-1e10-42da-8213-1d69e486d02e" /></a>
 
 ## <a name="tech-stack">⚙️ Tech Stack</a>
 
@@ -80,6 +67,9 @@ members. It's a place where people help each other out.
 and many more, including the latest **React 19**, **Next.js 15** and **Appwrite** features alongside code architecture and
 reusability
 
+
+
+
 ## <a name="quick-start">🤸 Quick Start</a>
 
 Follow these steps to set up the project locally on your machine.
@@ -95,8 +85,8 @@ Make sure you have the following installed on your machine:
 **Cloning the Repository**
 
 ```bash
-git clone https://github.com/JavaScript-Mastery-Pro/storage_management_solution.git
-cd storage_management_solution
+git clone https://github.com/NiketSingh147/StoreIt.git
+cd storage_management_solution-main
 ```
 
 **Installation**
@@ -1054,22 +1044,4 @@ declare interface ShareInputProps {
 
 </details>
 
-## <a name="links">🔗 Assets</a>
 
-- Assets used in the project can be found [here](https://jsm.dev/gdrive-kit)
-
-<a href="https://jsm.dev/gdrive-kit">
-  <img src="public/readme/videokit.png" alt="Video Kit Banner">
-</a>
-
-
-## <a name="more">🚀 More</a>
-
-**Advance your skills with Next.js Pro Course**
-
-Enjoyed creating this project? Dive deeper into our PRO courses for a richer learning adventure. They're packed with
-detailed explanations, cool features, and exercises to boost your skills. Give it a go!
-
-<a href="https://jsm.dev/gdrive-jsmpro" target="_blank">
-  <img src="public/readme/jsmpro.png" alt="Project Banner">
-</a>
