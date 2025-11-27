@@ -424,11 +424,26 @@
   .sidebar-nav-item {
     @apply flex text-light-100 gap-4 rounded-xl lg:w-full justify-center lg:justify-start items-center h5 lg:px-[30px] h-[52px] lg:rounded-full !important;
   }
+  /* Hover effect */
+  .sidebar-nav-item:hover {
+    background-color: #f1f4fc;
+    cursor: pointer;
+  }
   .sidebar-user-info {
     @apply mt-4 flex items-center justify-center gap-2 rounded-full bg-brand/10 p-1 text-light-100 lg:justify-start lg:p-3 !important;
   }
   .sidebar-user-avatar {
     @apply aspect-square w-10 rounded-full object-cover !important;
+  }
+
+  .sidebar-tilt:hover {
+    transform: scale(1.08) rotate(5deg);
+  }
+
+  .sidebar-tilt {
+    animation: tiltZoom 3s ease-in-out infinite;
+    transition: transform 0.5s ease;
+    transform-origin: center;
   }
 
   .shad-active {
@@ -460,3 +475,131 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* bhakchodi below  */
+
+/* WRAPPER */
+.storeit-animated-logo {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* TEXT STYLE */
+.storeit-text {
+  display: inline-flex;
+  gap: 2px;
+  font-size: 30px;
+  font-weight: 700;
+  color: #ff5b62;
+  user-select: none;
+}
+
+/* Animation base */
+.letter {
+  opacity: 0;
+  transform: translateY(-12px);
+  display: inline-block;
+  animation: dropFade 0.6s ease forwards;
+}
+
+/* Automatic stagger timing */
+.letter:nth-child(1) {
+  animation-delay: 0.3s;
+}
+.letter:nth-child(2) {
+  animation-delay: 0.45s;
+}
+.letter:nth-child(3) {
+  animation-delay: 0.6s;
+}
+.letter:nth-child(4) {
+  animation-delay: 0.75s;
+}
+.letter:nth-child(5) {
+  animation-delay: 0.9s;
+}
+.letter:nth-child(6) {
+  animation-delay: 1.05s;
+}
+.letter:nth-child(7) {
+  animation-delay: 1.2s;
+}
+
+/* Keyframes */
+@keyframes dropFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-12px) rotate(-5deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(5px) rotate(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* Hover replays animation */
+.storeit-animated-logo:hover .letter {
+  animation-name: dropFadeHover;
+  animation-duration: 0.4s;
+  animation-fill-mode: forwards;
+}
+
+/* Hover variant */
+@keyframes dropFadeHover {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* @keyframes dropLetter {
+  0% {
+    transform: translateY(-20px) rotateX(45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(5px) rotateX(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+.animate-drop-letter {
+  animation: dropLetter 0.6s cubic-bezier(0.25, 0.1, 0.45, 1.4) forwards;
+} */
+ @keyframes drop-letter {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) rotate(-10deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0px) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.animate-drop-letter {
+  animation: drop-letter 0.45s ease-out forwards;
+}
+
+

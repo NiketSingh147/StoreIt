@@ -31,22 +31,18 @@ const OtpModal = ({
 }) => {
   const router = useRouter();
 
-  // Modal must start closed (for SSR)
   const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    setIsOpen(true);
-  }, []);
-
-  // The OTP (Appwrite calls it “secret”)
   const [secret, setSecret] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [otpError, setOtpError] = useState("");
 
-  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
+  useEffect(() => {
+    setIsOpen(true);
+  }, []);
 
-    console.log({ accountId, secret });
+  // ⬇️ Submit handler (same as button)
+  const handleSubmit = async () => {
+    setIsLoading(true);
 
     try {
       const sessionId = await verifySecret({ accountId, password: secret });
@@ -58,6 +54,13 @@ const OtpModal = ({
     }
 
     setIsLoading(false);
+  };
+
+  // ⬇️ Add Enter key listener inside InputOTP
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
   };
 
   const handleResendOtp = async () => {
@@ -79,6 +82,7 @@ const OtpModal = ({
               className="otp-close-button"
             />
           </AlertDialogTitle>
+
           <AlertDialogDescription className="subtitle-2 text-center text-light-100">
             We’ve sent a code to{" "}
             <span className="pl-1 text-brand">{email}</span>
@@ -92,6 +96,7 @@ const OtpModal = ({
             setSecret(value);
             if (otpError) setOtpError("");
           }}
+          onKeyDown={handleKeyDown} // ⬅️ ENTER KEY SUPPORT
         >
           <InputOTPGroup className="shad-otp">
             <InputOTPSlot index={0} className="shad-otp-slot" />
@@ -104,7 +109,7 @@ const OtpModal = ({
         </InputOTP>
 
         {otpError && (
-            <p className="text-red-500 text-center mt-3">{otpError}</p>
+          <p className="text-red-500 text-center mt-3">{otpError}</p>
         )}
 
         <AlertDialogFooter>

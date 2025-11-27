@@ -17,24 +17,42 @@ const Sidebar = ({ fullName, avatar, email }: Props) => {
 
   return (
     <aside className="sidebar">
-      <Link href="/">
+      
+      {/* Logo */}
+      <Link
+        href="/"
+        className="storeit-animated-logo hidden lg:flex items-center gap-2"
+      >
         <Image
-          src="/assets/icons/logo-full-brand.svg"
-          alt="logo"
-          width={160}
-          height={50}
-          className="hidden h-auto lg:block"
+          src="/assets/icons/logo-brand.svg"
+          alt="logo icon"
+          width={52}
+          height={52}
+          className="logo-icon"
         />
 
+        <div className="storeit-text">
+          <span className="letter">S</span>
+          <span className="letter">t</span>
+          <span className="letter">o</span>
+          <span className="letter">r</span>
+          <span className="letter">e</span>
+          <span className="letter">I</span>
+          <span className="letter">t</span>
+        </div>
+      </Link>
+
+      {/* Mobile version stays as is */}
+      <Link href="/" className="lg:hidden">
         <Image
           src="/assets/icons/logo-brand.svg"
           alt="logo"
           width={52}
           height={52}
-          className="lg:hidden"
         />
       </Link>
 
+      {/* Navigation */}
       <nav className="sidebar-nav">
         <ul className="flex flex-1 flex-col gap-6">
           {navItems.map(({ url, name, icon }) => (
@@ -42,7 +60,7 @@ const Sidebar = ({ fullName, avatar, email }: Props) => {
               <li
                 className={cn(
                   "sidebar-nav-item",
-                  pathname === url && "shad-active",
+                  pathname === url && "shad-active"
                 )}
               >
                 <Image
@@ -52,7 +70,7 @@ const Sidebar = ({ fullName, avatar, email }: Props) => {
                   height={24}
                   className={cn(
                     "nav-icon",
-                    pathname === url && "nav-icon-active",
+                    pathname === url && "nav-icon-active"
                   )}
                 />
                 <p className="hidden lg:block">{name}</p>
@@ -62,15 +80,17 @@ const Sidebar = ({ fullName, avatar, email }: Props) => {
         </ul>
       </nav>
 
+      {/* 🎉 Animated Image */}
       <Image
         src="/assets/images/files-2.png"
-        alt="logo"
+        alt="illustration"
         width={506}
         height={418}
-        className="w-full"
+        className="w-full sidebar-tilt cursor-pointer"
       />
 
-      <div className="sidebar-user-info">
+      {/* User Info */}
+      <div className="sidebar-user-info cursor-pointer">
         <Image
           src={avatar}
           alt="Avatar"
@@ -86,4 +106,5 @@ const Sidebar = ({ fullName, avatar, email }: Props) => {
     </aside>
   );
 };
+
 export default Sidebar;
