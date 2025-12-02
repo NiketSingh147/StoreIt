@@ -36,10 +36,16 @@ export const sendEmailOTP = async ({ email }: { email: string }) => {
   const { account } = await createAdminClient();
 
   try {
+    // keep using createEmailToken flow (returns userId). Use ID.unique() server-side if needed.
     const session = await account.createEmailToken("unique()", email);
+    console.log("sendEmailOTP success:", session);
     return session.userId;
-  } catch (error) {
-    handleError(error, "Failed to send email OTP");
+  } catch (error: any) {
+    console.error(
+      "sendEmailOTP failed - raw error:",
+      JSON.stringify(error, Object.getOwnPropertyNames(error))
+    );
+    throw error; // rethrow so caller sees failure
   }
 };
 
@@ -79,6 +85,8 @@ export async function createUserRecord({
 
 // ==================================================
 // CREATE ACCOUNT (SIGN UP)
+// - NOTE: still uses OTP flow: we send OTP and create a user record in your DB.
+// - The *actual* Auth account is created later when the user sets a password.
 // ==================================================
 export const createAccount = async ({
   fullName,
@@ -104,20 +112,46 @@ export const createAccount = async ({
 };
 
 // ==================================================
-// VERIFY OTP
+// VERIFY OTP & SET PASSWORD
+//
+// This is the important patch:
+// When the user submits password (from set-password page) we:
+//  1) find your DB doc by accountId,
+//  2) create a real Appwrite Auth user (account.create(...)) using the same accountId,
+//  3) create an email/password session and set cookie.
 // ==================================================
 export const verifySecret = async ({
   accountId,
   password,
+  fullName,
+  email
 }: {
   accountId: string;
   password: string;
+  fullName: string;
+  email: string;
 }) => {
   try {
     const { account } = await createAdminClient();
 
-    const session = await account.createSession(accountId, password);
+    // 1️⃣ Try creating a REAL Auth user (only if it doesn’t already exist)
+    try {
+      await account.create(accountId, email, password, fullName);
+      console.log("✔ Auth user created");
+    } catch (err: any) {
+      // If user already exists — ignore conflict
+      if (err.code === 409) {
+        console.log("ℹ Auth user already exists (409 conflict)");
+      } else {
+        console.error("❌ Failed to create Auth user:", err);
+        throw err;
+      }
+    }
 
+    // 2️⃣ Start an Appwrite password session (login)
+    const session = await account.createEmailPasswordSession(email, password);
+
+    // 3️⃣ Save session token in secure cookie
     const cookieOptions = {
       path: "/",
       httpOnly: true,
@@ -127,12 +161,14 @@ export const verifySecret = async ({
 
     (await cookies()).set("appwrite-session", session.secret, cookieOptions);
 
-    return parseStringify({ sessionId: session.$id });
+    console.log("✔ OTP Verified → Session created");
+    return { ok: true, sessionId: session.$id };
+
   } catch (error) {
-    handleError(error, "Failed to verify OTP");
+    console.error("❌ verifySecret error:", error);
+    return { ok: false, error: "Failed to verify OTP" };
   }
 };
-
 // ==================================================
 // CURRENT USER  (PATCHED FOR SAFE SESSION)
 // ==================================================
@@ -224,5 +260,50 @@ export const signInUser = async ({ email }: { email: string }) => {
     return parseStringify({ accountId: null, error: "User not found" });
   } catch (error) {
     handleError(error, "Failed to sign in user");
+  }
+};
+
+// ==================================================
+// LOGIN WITH PASSWORD
+// ==================================================
+
+export const loginWithPassword = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
+  try {
+    const { account } = await createAdminClient();
+
+    // 1. Check if email exists in our DB
+    const user = await getUserByEmail(email);
+    if (!user) {
+      return { ok: false, errorType: "NO_USER", error: "User not registered" };
+    }
+
+    // 2. Try password login
+    try {
+      const session = await account.createEmailPasswordSession(email, password);
+
+      // Store cookie
+      const cookieOptions = {
+        path: "/",
+        httpOnly: true,
+        sameSite: "strict" as const,
+        secure: process.env.NODE_ENV === "production",
+      };
+
+      (await cookies()).set("appwrite-session", session.secret, cookieOptions);
+
+      return { ok: true };
+    } catch (err: any) {
+      // Appwrite error 401 = wrong password
+      return { ok: false, errorType: "WRONG_PASSWORD", error: "Incorrect password" };
+    }
+  } catch (err: any) {
+    console.error("Password login error:", err);
+    return { ok: false, errorType: "UNKNOWN", error: "Login failed" };
   }
 };

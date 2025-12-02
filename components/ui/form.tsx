@@ -95,13 +95,18 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       ref={ref}
-      className={cn(error && "text-destructive", className)}
+      className={cn(
+        "font-semibold text-[18px]",       // 🔥 added boldness + slightly larger text
+        error && "text-destructive",
+        className
+      )}
       htmlFor={formItemId}
       {...props}
     />
   )
 })
 FormLabel.displayName = "FormLabel"
+
 
 const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,

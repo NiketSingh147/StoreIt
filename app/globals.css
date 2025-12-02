@@ -603,3 +603,121 @@
 }
 
 
+/* ---------- AUTH INPUT: remove red border/shadow when we show custom errors ---------- */
+
+/* Preferred: inputs that opt-out via attribute */
+input[data-no-error-border="true"][aria-invalid="true"],
+textarea[data-no-error-border="true"][aria-invalid="true"],
+select[data-no-error-border="true"][aria-invalid="true"],
+input[data-no-error-border="true"][aria-invalid="true"]:focus,
+textarea[data-no-error-border="true"][aria-invalid="true"]:focus,
+select[data-no-error-border="true"][aria-invalid="true"]:focus {
+  border-color: #e5e7eb !important;      /* neutral light border */
+  box-shadow: none !important;           /* remove red shadow */
+  outline: none !important;
+  --tw-ring-color: transparent !important; /* remove tailwind ring */
+}
+
+/* If some libraries apply utility classes (border-red-500 / ring-red-500), override them */
+input[aria-invalid="true"].border-red-500,
+input[aria-invalid="true"].ring-red-500,
+textarea[aria-invalid="true"].border-red-500,
+textarea[aria-invalid="true"].ring-red-500,
+select[aria-invalid="true"].border-red-500,
+select[aria-invalid="true"].ring-red-500 {
+  border-color: #e5e7eb !important;
+  box-shadow: none !important;
+  --tw-ring-color: transparent !important;
+}
+
+/* Also cover focus/active states when aria-invalid is present */
+input[aria-invalid="true"]:focus,
+input[aria-invalid="true"]:focus-visible,
+textarea[aria-invalid="true"]:focus,
+textarea[aria-invalid="true"]:focus-visible,
+select[aria-invalid="true"]:focus,
+select[aria-invalid="true"]:focus-visible {
+  border-color: #e5e7eb !important;
+  box-shadow: none !important;
+  --tw-ring-color: transparent !important;
+}
+
+/* Fallback: very-specific selector for shadcn form inputs (if your inputs have these classes) */
+.shad-form-item input[aria-invalid="true"],
+.shad-form-item textarea[aria-invalid="true"] {
+  border-color: #e5e7eb !important;
+  box-shadow: none !important;
+  --tw-ring-color: transparent !important;
+}
+
+/* ---------- Error message (yellow) styling ---------- */
+.auth-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f9e29a !important; /* warm yellow - visible on pink background */
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-top: 6px;
+  line-height: 1;
+}
+
+.auth-error::before {
+  content: "⚠️";
+  display: inline-block;
+  transform: translateY(-1px);
+}
+
+/* small tweak so invalid input label doesn't inherit red color from some libraries */
+label[for] {
+  color: inherit;
+}
+
+/* If you want a slightly stronger neutral border on invalid inputs */
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-color: #eaeaea !important;
+}
+
+/* 🔥 Shake animation (already used by you) */
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+/* SIGN-IN SUCCESS ZOOM FADE EFFECT */
+.success-zoom-fade {
+  animation: zoomFade 600ms ease forwards;
+}
+
+@keyframes zoomFade {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0px);
+  }
+  40% {
+    transform: scale(1.06);
+    opacity: 0.85;
+  }
+  70% {
+    transform: scale(1.12);
+    opacity: 0.4;
+    filter: blur(1px);
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+

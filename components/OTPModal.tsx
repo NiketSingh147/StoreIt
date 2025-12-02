@@ -1,3 +1,4 @@
+// components/OTPModal.tsx
 "use client";
 
 import {
@@ -19,16 +20,16 @@ import {
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { verifySecret, sendEmailOTP } from "@/lib/actions/user.actions";
+import { sendEmailOTP } from "@/lib/actions/user.actions";
 import { useRouter } from "next/navigation";
 
-const OtpModal = ({
+export default function OtpModal({
   accountId,
   email,
 }: {
   accountId: string;
   email: string;
-}) => {
+}) {
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -40,31 +41,46 @@ const OtpModal = ({
     setIsOpen(true);
   }, []);
 
-  // ⬇️ Submit handler (same as button)
+  // ▶︎ Submit — call your server route /api/create-session (server sets cookie)
   const handleSubmit = async () => {
     setIsLoading(true);
+    setOtpError("");
 
     try {
-      const sessionId = await verifySecret({ accountId, password: secret });
+      const res = await fetch("/api/create-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accountId, secret }),
+      });
 
-      if (sessionId) router.push("/");
-    } catch (error) {
-      console.log("Failed to verify OTP", error);
-      setOtpError("Incorrect OTP. Please try again.");
-    }
+      const data = await res.json();
 
-    setIsLoading(false);
-  };
-
-  // ⬇️ Add Enter key listener inside InputOTP
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSubmit();
+      if (res.ok && data.ok) {
+        // close modal and redirect to set-password
+        setIsOpen(false);
+        router.push("/set-password");
+      } else {
+        // server sent back ok: false or status !== 200
+        setOtpError(data?.error || "Incorrect OTP. Please try again.");
+      }
+    } catch (err) {
+      console.error("OTP verify error:", err);
+      setOtpError("OTP verification failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleResendOtp = async () => {
-    await sendEmailOTP({ email });
+    try {
+      await sendEmailOTP({ email });
+    } catch (err) {
+      console.error("Resend OTP failed:", err);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSubmit();
   };
 
   return (
@@ -84,8 +100,7 @@ const OtpModal = ({
           </AlertDialogTitle>
 
           <AlertDialogDescription className="subtitle-2 text-center text-light-100">
-            We’ve sent a code to{" "}
-            <span className="pl-1 text-brand">{email}</span>
+            We’ve sent a code to <span className="pl-1 text-brand">{email}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -94,23 +109,18 @@ const OtpModal = ({
           value={secret}
           onChange={(value) => {
             setSecret(value);
-            if (otpError) setOtpError("");
+            setOtpError("");
           }}
-          onKeyDown={handleKeyDown} // ⬅️ ENTER KEY SUPPORT
+          onKeyDown={handleKeyDown}
         >
           <InputOTPGroup className="shad-otp">
-            <InputOTPSlot index={0} className="shad-otp-slot" />
-            <InputOTPSlot index={1} className="shad-otp-slot" />
-            <InputOTPSlot index={2} className="shad-otp-slot" />
-            <InputOTPSlot index={3} className="shad-otp-slot" />
-            <InputOTPSlot index={4} className="shad-otp-slot" />
-            <InputOTPSlot index={5} className="shad-otp-slot" />
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <InputOTPSlot key={i} index={i} className="shad-otp-slot" />
+            ))}
           </InputOTPGroup>
         </InputOTP>
 
-        {otpError && (
-          <p className="text-red-500 text-center mt-3">{otpError}</p>
-        )}
+        {otpError && <p className="text-red-500 text-center mt-3">{otpError}</p>}
 
         <AlertDialogFooter>
           <div className="flex w-full flex-col gap-4">
@@ -147,6 +157,4 @@ const OtpModal = ({
       </AlertDialogContent>
     </AlertDialog>
   );
-};
-
-export default OtpModal;
+}

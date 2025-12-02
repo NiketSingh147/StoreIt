@@ -4,49 +4,39 @@ import { Account, Avatars, Client, Databases, Storage } from "node-appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import { cookies } from "next/headers";
 
+// SESSION CLIENT (USER)
 export const createSessionClient = async () => {
+  const session = (await cookies()).get("appwrite-session")?.value;
+
   const client = new Client()
-    .setEndpoint(appwriteConfig.endpointUrl)
+    .setEndpoint(appwriteConfig.endpointUrl) // SAME REGION
     .setProject(appwriteConfig.projectId);
 
-  const session = (await cookies()).get("appwrite-session");
-
-  // if (!session || !session.value) throw new Error("No session");
-  if (!session || !session.value) {
-  console.warn("⚠ No session found — user is probably not logged in yet.");
-  return null;
+  if (!session) {
+    console.warn("⚠ No session found");
+    return null;
   }
 
-  client.setSession(session.value);
+  client.setSession(session);
 
   return {
-    get account() {
-      return new Account(client);
-    },
-    get databases() {
-      return new Databases(client);
-    },
+    account: new Account(client),
+    databases: new Databases(client),
+    storage: new Storage(client),
   };
 };
 
+// ADMIN CLIENT (SERVER)
 export const createAdminClient = async () => {
   const client = new Client()
-    .setEndpoint(appwriteConfig.endpointUrl)
+    .setEndpoint(appwriteConfig.endpointUrl) // SAME REGION
     .setProject(appwriteConfig.projectId)
     .setKey(appwriteConfig.secretKey);
 
   return {
-    get account() {
-      return new Account(client);
-    },
-    get databases() {
-      return new Databases(client);
-    },
-    get storage() {
-      return new Storage(client);
-    },
-    get avatars() {
-      return new Avatars(client);
-    },
+    account: new Account(client),
+    databases: new Databases(client),
+    storage: new Storage(client),
+    avatars: new Avatars(client),
   };
 };
